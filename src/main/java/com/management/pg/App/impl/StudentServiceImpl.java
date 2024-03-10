@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.management.pg.App.entity.Room;
 import com.management.pg.App.entity.Student;
+import com.management.pg.App.exception.APIException;
 import com.management.pg.App.payload.StudentDTO;
 import com.management.pg.App.payload.StudentDTOWithImage;
 import com.management.pg.App.repo.RoomRepo;
@@ -39,16 +41,42 @@ public class StudentServiceImpl implements StudentService {
     @Value("${project.image}")
     private String path;
 	
-	@Override
-	public StudentDTO saveStudent(StudentDTO studentdto) {
-		Student student = modelMapper.map(studentdto, Student.class);
-        Room room = roomRepo.findByRoomNumber(student.getRoom().getRoomNumber());
-                                  
-        student.setRoom(room);        
-    	student.setProfileImagePath(null);
-		Student savedStudent = studentRepo.save(student);
-		return modelMapper.map(savedStudent, StudentDTO.class);	
-	}
+    @Override
+    public StudentDTO saveStudent(StudentDTO studentdto) {
+        try {
+            if (studentdto == null) {
+                throw new APIException("studentDTO cannot be null");
+            }
+
+            Student student = modelMapper.map(studentdto, Student.class);
+            if (student == null) {
+                throw new APIException("Mapping studentDTO to Student failed");
+            }
+
+            Room room = roomRepo.findByRoomNumber(student.getRoom().getRoomNumber());
+            if (room == null) {
+                throw new APIException("Room not found");
+            }
+
+            student.setRoom(room);        
+            student.setProfileImagePath(null);
+            
+            Student savedStudent = studentRepo.save(student);
+            
+            return modelMapper.map(savedStudent, StudentDTO.class);    
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException &&
+                    e.getCause().getMessage().contains("aadhar_card_number")) {
+                throw new APIException("Aadhar Card already exists");
+            } else {
+                throw new APIException("Data integrity violation: " + e.getMessage());
+            }
+        } catch (Exception ex) {
+            throw new APIException("An error occurred: " + ex.getMessage());
+        }
+    }
+
+
 
 	@Override
 	public List<StudentDTO> getAllStudents() {
@@ -109,16 +137,12 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public StudentDTO updateStudent(int studentId, StudentDTO studentdto) {
 		Student student = studentRepo.findById(studentId).orElseThrow();
-		System.out.println("Inside updateStudent");
-		System.out.println("studentdto : "+studentdto);
-		System.out.println("student : "+student);
 		student.setAddress(studentdto.getAddress());
 		student.setEmail(studentdto.getAddress());
 		student.setPhoneNumber(studentdto.getPhoneNumber());
 		student.setAadharCardNumber(studentdto.getAadharCardNumber());
 		student.setRoom(studentdto.getRoom());
 		student.setProfileImagePath(studentdto.getProfileImagePath());
-		System.out.println("student : "+student);
 
 		Student savedStudent = studentRepo.save(student);
 		StudentDTO savedStudentDTO = modelMapper.map(savedStudent, StudentDTO.class);

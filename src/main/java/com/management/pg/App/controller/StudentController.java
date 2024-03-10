@@ -21,6 +21,8 @@ import com.management.pg.App.payload.StudentDTO;
 import com.management.pg.App.payload.StudentDTOWithImage;
 import com.management.pg.App.service.StudentService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,7 +32,7 @@ public class StudentController {
 	private StudentService service;
 	
 	@PostMapping("/student/admin/save")
-	public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentdto){
+	public ResponseEntity<StudentDTO> addStudent(@Valid @RequestBody StudentDTO studentdto){
 		StudentDTO createdStudent = service.saveStudent(studentdto);
 		return new ResponseEntity<StudentDTO>(createdStudent, HttpStatus.CREATED);
 	}

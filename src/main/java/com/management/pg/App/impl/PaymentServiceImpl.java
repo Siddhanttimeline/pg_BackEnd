@@ -73,5 +73,5 @@ public class PaymentServiceImpl implements PaymentService {
         // Compare total payment amount with the price of the room
         return totalPaymentForCurrentMonth >= room.getPrice() ? "Paid" : "Unpaid";
      }
-
+	
 }

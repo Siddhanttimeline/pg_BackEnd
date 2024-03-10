@@ -30,7 +30,7 @@ public class Student {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
 	private String name;
 	
     @Column(name = "email")
@@ -39,14 +39,14 @@ public class Student {
     @Column(name = "address")
 	private String address;
 	
-    @Column(name = "phone_number")
+    @Column(name = "phone_number",nullable = false)
 	private String phoneNumber;
 	
-    @Column(name = "aadhar_card_number", unique = true)
+    @Column(name = "aadhar_card_number", unique = true, nullable = false)
 	private String aadharCardNumber;
     
     @ManyToOne(fetch= FetchType.EAGER)
-    @JoinColumn(name = "room_number", referencedColumnName = "roomNumber")
+    @JoinColumn(name = "room_number", referencedColumnName = "room_number")
     private Room room;
 	
     @Column(name = "profile_image_path")
@@ -60,7 +60,6 @@ public class Student {
     private List<Payment> payments;
     
     @Column(name = "date_of_joining")
-    private LocalDate dateOfJoining;
+    private String dateOfJoining;
 
-    
 }
