@@ -137,13 +137,18 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public StudentDTO updateStudent(int studentId, StudentDTO studentdto) {
 		Student student = studentRepo.findById(studentId).orElseThrow();
-		student.setAddress(studentdto.getAddress());
+		student.setName(studentdto.getName());
 		student.setEmail(studentdto.getAddress());
 		student.setPhoneNumber(studentdto.getPhoneNumber());
 		student.setAadharCardNumber(studentdto.getAadharCardNumber());
-		student.setRoom(studentdto.getRoom());
+		student.setAddress(studentdto.getAddress());
+		
+        Room room = roomRepo.findByRoomNumber(student.getRoom().getRoomNumber());
+		student.setRoom(room);
+		
+		student.setDateOfJoining(studentdto.getDateOfJoining());
 		student.setProfileImagePath(studentdto.getProfileImagePath());
-
+		student.setAadharCardImagePath(studentdto.getAadharCardImagePath());
 		Student savedStudent = studentRepo.save(student);
 		StudentDTO savedStudentDTO = modelMapper.map(savedStudent, StudentDTO.class);
 		return savedStudentDTO;
