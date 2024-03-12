@@ -1,5 +1,4 @@
 package com.management.pg.App.entity;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -35,6 +34,9 @@ public class Student {
 	
     @Column(name = "email")
 	private String email;
+    
+    @Column(name = "password")
+    private String password;
 	
     @Column(name = "address")
 	private String address;
@@ -55,7 +57,7 @@ public class Student {
     @Column(name = "aadhar_card_image_path")
 	private String aadharCardImagePath;
     
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Payment> payments;
     

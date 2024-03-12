@@ -76,13 +76,13 @@ public class PaymentController {
 	@PostMapping("/payment/{aadharCard}")
 	public ResponseEntity<PaymentDTO> pay(@RequestBody PaymentDTO paymentdto, @PathVariable String aadharCard){
 		PaymentDTO paid = paymnetService.createPayment(paymentdto,aadharCard);
-		return new ResponseEntity<PaymentDTO>(paid, HttpStatus.CREATED);
+		return new ResponseEntity<PaymentDTO>(paid, HttpStatus.OK);
 	}
 	
 	@GetMapping("/payments/{aadharCard}")
 	public ResponseEntity<List<PaymentDTO>> getPaymentHistory(@PathVariable String aadharCard){
 		List<PaymentDTO> paid = paymnetService.getAllPayments(aadharCard);
-		return new ResponseEntity<List<PaymentDTO>>(paid, HttpStatus.CREATED);
+		return new ResponseEntity<List<PaymentDTO>>(paid, HttpStatus.OK);
 	}
 
 }
